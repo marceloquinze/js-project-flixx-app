@@ -80,6 +80,8 @@ async function displayMovieDetails() {
 	const movieID = window.location.search.split('=')[1];
 	const movie = await fetchData(`movie/${movieID}`);
 
+	displayBackDrop('movie', movie.backdrop_path);
+
 	const div = document.createElement('div');
 	div.innerHTML = `
     <div class="details-top">
@@ -129,6 +131,29 @@ async function displayMovieDetails() {
 	document.querySelector('#movie-details').appendChild(div);
 }
 
+// Add Backdrop
+function displayBackDrop(type, imagePath) {
+	const overlayDiv = document.createElement('div');
+	overlayDiv.style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${imagePath})`;
+	overlayDiv.style.backgroundSize = 'cover';
+	overlayDiv.style.backgroundPosition = 'center';
+	overlayDiv.style.backgroundRepeat = 'no-repeat';
+	overlayDiv.style.height = '100vh';
+	overlayDiv.style.width = '100vw';
+	overlayDiv.style.position = 'absolute';
+	overlayDiv.style.top = '0';
+	overlayDiv.style.left = '0';
+	overlayDiv.style.zIndex = '-1';
+	overlayDiv.style.opacity = '0.1';
+
+	if (type === 'movie') {
+		document.querySelector('#movie-details').appendChild(overlayDiv);
+	} else {
+		document.querySelector('#show-details').appendChild(overlayDiv);
+	}
+}
+
+// Add Commas to Number
 function addCommasToNumber(number) {
 	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
