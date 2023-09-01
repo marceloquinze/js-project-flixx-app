@@ -131,6 +131,63 @@ async function displayMovieDetails() {
 	document.querySelector('#movie-details').appendChild(div);
 }
 
+// Display Show Details
+async function displayShowDetails() {
+	const showID = window.location.search.split('=')[1];
+	const tvshow = await fetchData(`tv/${showID}`);
+
+	displayBackDrop('show', tvshow.backdrop_path);
+
+	const div = document.createElement('div');
+	div.innerHTML = `
+    <div class="details-top">
+    <div>
+        ${
+			tvshow.poster_path
+				? `<img
+        src="https://image.tmdb.org/t/p/w500${tvshow.poster_path}"
+        class="card-img-top"
+        alt="${tvshow.name}"
+        />`
+				: `<img
+        src="images/no-image.jpg"
+        class="card-img-top"
+        alt="${tvshow.name}"
+      />`
+		}
+    </div>
+    <div>
+      <h2>${tvshow.name}</h2>
+      <p>
+        <i class="fas fa-star text-primary"></i>
+        ${tvshow.vote_average.toFixed(1)} / 10
+      </p>
+      <p class="text-muted">Release Date: ${tvshow.first_air_date}</p>
+      <p>${tvshow.overview}</p>
+      <h5>Genres</h5>
+      <ul class="list-group">
+      ${tvshow.genres.map((genre) => `<li>${genre.name}</li>`).join('')}
+      </ul>
+      <a href="${tvshow.homepage}" target="_blank" class="btn">Visit Show Homepage</a>
+    </div>
+  </div>
+  <div class="details-bottom">
+    <h2>Show Info</h2>
+    <ul>
+        <li><span class="text-secondary">Number Of Episodes:</span> ${tvshow.number_of_episodes}</li>
+        <li>
+            <span class="text-secondary">Last Episode To Air:</span> ${tvshow.last_episode_to_air.name}
+        </li>
+      <li><span class="text-secondary">Status:</span> ${tvshow.status}</li>
+    </ul>
+    <h4>Production Companies</h4>
+    <div class="list-group">
+        ${tvshow.production_companies.map((company) => `<span>${company.name}</span>`).join(', ')}</div>
+  </div>
+    `;
+	document.querySelector('#show-details').appendChild(div);
+}
+
 // Add Backdrop
 function displayBackDrop(type, imagePath) {
 	const overlayDiv = document.createElement('div');
@@ -204,7 +261,7 @@ function init() {
 			displayMovieDetails();
 			break;
 		case '/tv-details.html':
-			console.log('tv details');
+			displayShowDetails();
 			break;
 		case '/search.html':
 			console.log('search');
