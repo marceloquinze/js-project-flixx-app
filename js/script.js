@@ -10,6 +10,7 @@ const global = {
 		type: '',
 		page: 1,
 		totalPages: 1,
+		totalResults: 0,
 	},
 	api: {
 		apiKey: 'cd311c035d6b18faffbee52835eb8ad3',
@@ -30,7 +31,7 @@ async function displayPopularMovies() {
           ${
 				movie.poster_path
 					? `<img
-            src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+            src="https://image.tmdb.org/t/p/w500/${movie.poster_path}"
             class="card-img-top"
             alt="${movie.title}"
             />`
@@ -63,7 +64,7 @@ async function displayPopularTVShows() {
         ${
 			show.poster_path
 				? `<img
-        src="https://image.tmdb.org/t/p/w500${show.poster_path}"
+        src="https://image.tmdb.org/t/p/w500/${show.poster_path}"
         class="card-img-top"
         alt="${show.name}"
         />`
@@ -99,7 +100,7 @@ async function displayMovieDetails() {
         ${
 			movie.poster_path
 				? `<img
-        src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+        src="https://image.tmdb.org/t/p/w500/${movie.poster_path}"
         class="card-img-top"
         alt="${movie.title}"
         />`
@@ -155,7 +156,7 @@ async function displayShowDetails() {
         ${
 			tvshow.poster_path
 				? `<img
-        src="https://image.tmdb.org/t/p/w500${tvshow.poster_path}"
+        src="https://image.tmdb.org/t/p/w500/${tvshow.poster_path}"
         class="card-img-top"
         alt="${tvshow.name}"
         />`
@@ -214,10 +215,47 @@ async function search() {
 			return;
 		}
 
-		//displaySearchResults(results);
+		displaySearchResults(results);
+		document.querySelector('#search-term').value = '';
 	} else {
 		showAlert('Please, enter a search term');
 	}
+}
+
+// Display Search Results
+function displaySearchResults(results) {
+	results.forEach((result) => {
+		// Limit number of itens (add index to foreach)
+		// if (index < 8) {
+		const div = document.createElement('div');
+		div.classList.add('card');
+		div.innerHTML = `
+        <a href="${global.search.type}-details.html?id=${result.id}">
+          ${
+				result.poster_path
+					? `<img
+            src="https://image.tmdb.org/t/p/w500/${result.poster_path}"
+            class="card-img-top"
+            alt="${global.search.type === 'movie' ? result.title : result.name}"
+            />`
+					: `<img
+            src="images/no-image.jpg"
+            class="card-img-top"
+            alt="${global.search.type === 'movie' ? result.title : result.name}"
+            />`
+			}
+        </a>
+        <div class="card-body">
+          <h5 class="card-title">${global.search.type === 'movie' ? result.title : result.name}</h5>
+          <p class="card-text">
+            <small class="text-muted">Release: ${
+				global.search.type === 'movie' ? result.release_date : result.first_air_date
+			}</small>
+          </p>
+        </div>
+        `;
+		document.querySelector('#search-results').appendChild(div);
+	});
 }
 
 // Display Slider Movies
@@ -229,7 +267,7 @@ async function displaySlider() {
 		div.classList.add('swiper-slide');
 		div.innerHTML = `
         <a href="movie-details.html?id=${movie.id}}">
-          <img src="http://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
+          <img src="http://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}" />
         </a>
         <h4 class="swiper-rating">
           <i class="fas fa-star text-secondary"></i> ${movie.vote_average} / 10
