@@ -2,21 +2,18 @@
 // TODO: add list of categories in the home page (by rating, by language, genre, now playing)
 // TODO: add list of Brazilian films, or a dropdown with categories
 // TODO: limit number of items on each list via dropdown select
+import { global } from './global.js';
 
-const global = {
-	currentPage: window.location.pathname,
-	search: {
-		term: '',
-		type: '',
-		page: 1,
-		totalPages: 1,
-		totalResults: 0,
-	},
-	api: {
-		apiKey: 'cd311c035d6b18faffbee52835eb8ad3',
-		apiUrl: 'https://api.themoviedb.org/3/',
-	},
-};
+import fetchData from './models.js';
+
+import {
+	showSpinner,
+	hideSpinner,
+	highlightActiveLink,
+	displayBackDrop,
+	showAlert,
+	addCommasToNumber,
+} from './utils.js';
 
 // Display Popular 20 Movies
 async function displayPopularMovies() {
@@ -355,58 +352,6 @@ function initSwiper() {
 	});
 }
 
-// Add Backdrop
-function displayBackDrop(type, imagePath) {
-	const overlayDiv = document.createElement('div');
-	overlayDiv.style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${imagePath})`;
-	overlayDiv.style.backgroundSize = 'cover';
-	overlayDiv.style.backgroundPosition = 'center';
-	overlayDiv.style.backgroundRepeat = 'no-repeat';
-	overlayDiv.style.height = '100vh';
-	overlayDiv.style.width = '100vw';
-	overlayDiv.style.position = 'absolute';
-	overlayDiv.style.top = '0';
-	overlayDiv.style.left = '0';
-	overlayDiv.style.zIndex = '-1';
-	overlayDiv.style.opacity = '0.1';
-
-	if (type === 'movie') {
-		document.querySelector('#movie-details').appendChild(overlayDiv);
-	} else {
-		document.querySelector('#show-details').appendChild(overlayDiv);
-	}
-}
-
-// Show Alert
-function showAlert(message, className = 'error') {
-	const alertEl = document.createElement('div');
-	alertEl.classList.add('alert', className);
-	alertEl.appendChild(document.createTextNode(message));
-	document.querySelector('#alert').appendChild(alertEl);
-
-	// Remove after 3 seconds
-	setTimeout(() => {
-		alertEl.remove();
-	}, 4000);
-}
-
-// Add Commas to Number
-function addCommasToNumber(number) {
-	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-// Fetch data from API
-async function fetchData(endpoint) {
-	const API_KEY = global.api.apiKey;
-	const API_URL = global.api.apiUrl;
-
-	showSpinner();
-	const response = await fetch(`${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US`);
-	const data = await response.json();
-	hideSpinner();
-	return data;
-}
-
 // Make request to search
 async function searchAPIData() {
 	const API_KEY = global.api.apiKey;
@@ -419,26 +364,6 @@ async function searchAPIData() {
 	const data = await response.json();
 	hideSpinner();
 	return data;
-}
-
-// Highlight active link
-function highlightActiveLink() {
-	const links = document.querySelectorAll('.nav-link');
-	links.forEach((link) => {
-		if (link.getAttribute('href') === global.currentPage) {
-			link.classList.add('active');
-		}
-	});
-}
-
-// Show Spinner
-function showSpinner() {
-	document.querySelector('.spinner').classList.add('show');
-}
-
-// Hide Spinner
-function hideSpinner() {
-	document.querySelector('.spinner').classList.remove('show');
 }
 
 // Init App
